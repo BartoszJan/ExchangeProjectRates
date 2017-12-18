@@ -6,6 +6,8 @@ import com.mojafirma.model.dao.RatesTableDao;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.CategoryAxis;
+import org.jfree.chart.axis.CategoryLabelPositions;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.labels.StandardCategoryItemLabelGenerator;
 import org.jfree.chart.plot.CategoryPlot;
@@ -19,22 +21,22 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class RatesChartPanel extends JFrame{
+public class RatesChart extends JFrame{
 
     private RatesTableDao ratesTableDao = new RatesTableDao();
 
-    public RatesChartPanel(String currencyName, LocalDate startDate, LocalDate endDate) {
+    public RatesChart(String currencyName, LocalDate startDate, LocalDate endDate) {
         super("Wykres");
 
         JFreeChart lineChart = ChartFactory.createLineChart(
-                "Wykres kursu waluty " + currencyName,
+                "Wykres Kursu Waluty " + currencyName.toUpperCase() + " (źródło 'www.nbp.pl')",
                 "Data","Wartość Kursu",
                 createDataset(currencyName, startDate, endDate),
                 PlotOrientation.VERTICAL,
                 true,true,false);
 
         ChartPanel chartPanel = new ChartPanel( lineChart );
-        chartPanel.setPreferredSize( new java.awt.Dimension( 700 , 500 ) );
+        chartPanel.setPreferredSize( new java.awt.Dimension( 800 , 500 ) );
         setContentPane( chartPanel );
         pack();
         setVisible(true);
@@ -49,6 +51,11 @@ public class RatesChartPanel extends JFrame{
         DecimalFormat decimalformat = new DecimalFormat("##.#####");
         renderer.setItemLabelGenerator(new StandardCategoryItemLabelGenerator("{2}", decimalformat));
         renderer.setItemLabelsVisible(true);
+
+        CategoryAxis domainAxis = plot.getDomainAxis();
+        domainAxis.setCategoryLabelPositions(
+                CategoryLabelPositions.createUpRotationLabelPositions(Math.PI / 2.0));
+
     }
 
     private DefaultCategoryDataset createDataset(String currencyName, LocalDate startDate, LocalDate endDate) {
