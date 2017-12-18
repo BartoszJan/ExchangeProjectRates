@@ -29,7 +29,7 @@ public class RatesChart extends JFrame{
         super("Wykres");
 
         JFreeChart lineChart = ChartFactory.createLineChart(
-                "Wykres Kursu Waluty " + currencyName.toUpperCase() + " (źródło 'www.nbp.pl')",
+                "Wykres Kursu Waluty " + currencyName.toUpperCase(),
                 "Data","Wartość Kursu",
                 createDataset(currencyName, startDate, endDate),
                 PlotOrientation.VERTICAL,
