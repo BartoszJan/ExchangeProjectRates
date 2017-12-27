@@ -1,0 +1,1 @@
+This folder is used to place data files. After placing files with exchange rates tables during program is running, information will be automatically saved to the database.

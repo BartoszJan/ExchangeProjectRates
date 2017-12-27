@@ -1,5 +1,7 @@
 package com.mojafirma.logic;
 
+import org.apache.log4j.Logger;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
@@ -9,15 +11,16 @@ import static java.nio.file.StandardWatchEventKinds.ENTRY_MODIFY;
 
 public class FileScanner implements Runnable {
 
+    static Logger log = Logger.getLogger(FileScanner.class.getName());
 
     public void run() {
 
         try {
             WatchService watcher = FileSystems.getDefault().newWatchService();
-            Path dir = Paths.get("C:/Users/Bartek/IdeaProjects/ExchangeRatesProject/Data Files");
+            Path dir = Paths.get(System.getProperty("user.dir")+"/Data Files");
             dir.register(watcher, ENTRY_CREATE, ENTRY_MODIFY);
 
-            System.out.println("Watch Service registered for dir: " + dir.getFileName());
+            log.info("Watch Service registered for dir: " + dir);
 
             boolean ifFileCreate = false;
 
@@ -26,6 +29,7 @@ public class FileScanner implements Runnable {
                 try {
                     key = watcher.take();
                 } catch (InterruptedException ex) {
+                    log.info(ex.getMessage());
                     return;
                 }
 
@@ -36,7 +40,7 @@ public class FileScanner implements Runnable {
                     WatchEvent<Path> ev = (WatchEvent<Path>) event;
                     Path fileName = ev.context();
                     File file = new File(dir + "/" + String.valueOf(fileName));
-                    System.out.println(kind.name() + ": " + file.getAbsolutePath());
+                    log.info(kind.name() + ": " + file.getAbsolutePath());
 
                     String fileExtension = "";
 
@@ -47,12 +51,15 @@ public class FileScanner implements Runnable {
 
                     if (kind == ENTRY_CREATE && fileExtension.equals("xml")) {
                         ifFileCreate = true;
+                    } else {
+                        log.info("File is not xml");
                     }
 
                     if (kind == ENTRY_MODIFY && ifFileCreate == true && fileExtension.equals("xml")) {
                         FileReader fileReader = new FileReader();
                         fileReader.readFile(file);
                         ifFileCreate = false;
+                        log.info("Read xml file");
                     }
                 }
 
@@ -64,6 +71,7 @@ public class FileScanner implements Runnable {
 
         } catch (IOException ex) {
             System.err.println(ex);
+            log.info(ex.getMessage());
         }
     }
 }
